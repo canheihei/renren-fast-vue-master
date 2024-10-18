@@ -12,11 +12,11 @@
           <el-form-item>
             <el-button @click="getDataList()">查询</el-button>
             <el-button type="success" @click="getAllDataList()">查询全部</el-button>
-            <el-buttonz
+            <el-button
               v-if="isAuth('product:attr:save')"
               type="primary"
               @click="addOrUpdateHandle()"
-            >新增</el-buttonz>
+            >新增</el-button>
             <el-button
               v-if="isAuth('product:attr:delete')"
               type="danger"
