@@ -1,18 +1,13 @@
 <template>
-  <el-row :gutter="20">
-  <el-col :span="6">
-    <category @show="treenodeclick"></category>
-  </el-col>
-  <el-col :span="18">
-    <div class="mod-config">
+  <div class="mod-config">
     <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
         <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('product:attrgroup:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('product:attrgroup:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button v-if="isAuth('coupon:seckillskunotice:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('coupon:seckillskunotice:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -28,40 +23,46 @@
         width="50">
       </el-table-column>
       <el-table-column
-        prop="attrGroupId"
+        prop="id"
         header-align="center"
         align="center"
-        label="分组id">
+        label="id">
       </el-table-column>
       <el-table-column
-        prop="attrGroupName"
+        prop="memberId"
         header-align="center"
         align="center"
-        label="组名">
+        label="member_id">
       </el-table-column>
       <el-table-column
-        prop="sort"
+        prop="skuId"
         header-align="center"
         align="center"
-        label="排序">
+        label="sku_id">
       </el-table-column>
       <el-table-column
-        prop="descript"
+        prop="sessionId"
         header-align="center"
         align="center"
-        label="描述">
+        label="活动场次id">
       </el-table-column>
       <el-table-column
-        prop="icon"
+        prop="subcribeTime"
         header-align="center"
         align="center"
-        label="组图标">
+        label="订阅时间">
       </el-table-column>
       <el-table-column
-        prop="catelogId"
+        prop="sendTime"
         header-align="center"
         align="center"
-        label="所属分类id">
+        label="发送时间">
+      </el-table-column>
+      <el-table-column
+        prop="noticeType"
+        header-align="center"
+        align="center"
+        label="通知方式[0-短信，1-邮件]">
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -70,9 +71,8 @@
         width="150"
         label="操作">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="relationHandle(scope.row.attrGroupId)">关联</el-button>
-          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.attrGroupId)">修改</el-button>
-          <el-button type="text" size="small" @click="deleteHandle(scope.row.attrGroupId)">删除</el-button>
+          <el-button type="text" size="small" @click="addOrUpdateHandle(scope.row.id)">修改</el-button>
+          <el-button type="text" size="small" @click="deleteHandle(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -87,22 +87,14 @@
     </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
-     <!-- 修改关联关系 -->
-    <relation-update v-if="relationVisible" ref="relationUpdate" @refreshData="getDataList"></relation-update>
   </div>
-  </el-col>
-  
-</el-row>
 </template>
 
 <script>
-import Category from "../common/category.vue"
-import addOrUpdate from "./attrgroup-add-or-update.vue"
-import RelationUpdate from "./attr-group-relation";
-export default {
-  data(){
-return {
-        catId:0,
+  import AddOrUpdate from './seckillskunotice-add-or-update'
+  export default {
+    data () {
+      return {
         dataForm: {
           key: ''
         },
@@ -112,29 +104,21 @@ return {
         totalPage: 0,
         dataListLoading: false,
         dataListSelections: [],
-        addOrUpdateVisible: false,
-        relationVisible:false
+        addOrUpdateVisible: false
       }
-  },components:{Category,addOrUpdate,RelationUpdate}
-  ,methods: {
-    relationHandle(groupId){
-      this.relationVisible = true;
-      this.$nextTick(() => {
-        this.$refs.relationUpdate.init(groupId);
-      });
     },
-      treenodeclick(data){
-         // console.log("点击的tree的nodeId:",catId)
-         if(data.catLevel == 3){
-            this.catId = data.catId;
-            this.getDataList ();
-         }
-      },
+    components: {
+      AddOrUpdate
+    },
+    activated () {
+      this.getDataList()
+    },
+    methods: {
       // 获取数据列表
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/product/attrgroup/list/'+this.catId),
+          url: this.$http.adornUrl('/coupon/seckillskunotice/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
@@ -177,7 +161,7 @@ return {
       // 删除
       deleteHandle (id) {
         var ids = id ? [id] : this.dataListSelections.map(item => {
-          return item.attrGroupId
+          return item.id
         })
         this.$confirm(`确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {
           confirmButtonText: '确定',
@@ -185,7 +169,7 @@ return {
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/product/attrgroup/delete'),
+            url: this.$http.adornUrl('/coupon/seckillskunotice/delete'),
             method: 'post',
             data: this.$http.adornData(ids, false)
           }).then(({data}) => {
@@ -204,12 +188,6 @@ return {
           })
         })
       }
-    },created(){
-      this.getDataList ();
     }
-}
+  }
 </script>
-
-<style>
-
-</style>

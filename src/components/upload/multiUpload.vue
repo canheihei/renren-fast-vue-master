@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-upload
-      action="http://mashibing-mall.oss-cn-guangzhou.aliyuncs.com"
+      action="http://chhei-mall.oss-cn-guangzhou.aliyuncs.com"
       :data="dataObj"
       list-type="picture-card"
       :file-list="fileList"

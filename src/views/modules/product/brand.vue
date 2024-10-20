@@ -112,7 +112,7 @@
         fixed="right"
         header-align="center"
         align="center"
-        width="200"
+        width="150"
         label="操作"
       >
       
@@ -149,7 +149,7 @@
       ref="addOrUpdate"
       @refreshDataList="getDataList"
     ></add-or-update>
-    <el-dialog title="关联分类" :visible.sync="cateRelationDialogVisible" width="30%" @close="closeDialogHandler">
+    <el-dialog title="关联分类" :visible.sync="cateRelationDialogVisible" width="30%">
       <el-popover placement="right-end" v-model="popCatelogSelectVisible">
         <category-cascader :catelogPath.sync="catelogPath"></category-cascader>
         <div style="text-align: right; margin: 0">
@@ -213,9 +213,6 @@ export default {
     this.getDataList();
   },
   methods: {
-    closeDialogHandler(){
-        this.catelogPath = []
-    },
     addCatelogSelect() {
       //{"brandId":1,"catelogId":2}
       this.popCatelogSelectVisible =false;
@@ -225,7 +222,6 @@ export default {
         data: this.$http.adornData({brandId:this.brandId,catelogId:this.catelogPath[this.catelogPath.length-1]}, false)
       }).then(({ data }) => {
         this.getCateRelation();
-        this.catelogPath = []
       });
     },
     deleteCateRelationHandle(id, brandId) {

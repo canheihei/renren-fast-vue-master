@@ -1,7 +1,7 @@
 <template>
   <el-row :gutter="20">
     <el-col :span="6">
-      <category @show="treenodeclick"></category>
+      <category @tree-node-click="treenodeclick"></category>
     </el-col>
     <el-col :span="18">
       <div class="mod-config">
